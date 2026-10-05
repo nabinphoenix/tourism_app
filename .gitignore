@@ -1,0 +1,64 @@
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+!.env.*.example
+.envrc
+
+# Flutter and Dart
+**/.dart_tool/
+**/.packages
+**/build/
+**/coverage/
+**/pubspec.lock.old
+**/flutter_*.png
+**/linked_*.ds
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+
+# Android build and signing material
+**/.gradle/
+**/local.properties
+**/key.properties
+**/*.jks
+**/*.keystore
+**/*.p12
+**/*.pfx
+
+# Private credentials and signing keys
+**/*service-role*
+**/*service_role*
+**/*serviceRole*
+**/*service_account*
+**/*service-account*
+**/*private-key*
+**/*private_key*
+**/*private*credential*
+**/*.pem
+**/*.key
+**/*.ppk
+**/id_rsa*
+**/id_ed25519*
+**/*.mobileprovision
+**/*.provisionprofile
+**/google-services.json
+**/GoogleService-Info.plist
+
+# Supabase local state
+supabase/.temp/
+supabase/.branches/
+
+# Admin dependencies (dashboard is not initialized yet)
+admin/node_modules/
+admin/.next/
+admin/out/
+
+# IDE and operating system files
+.idea/
+.fleet/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+Desktop.ini
+
