@@ -1,16 +1,19 @@
 # Supabase workspace
 
-This directory is reserved for Supabase project configuration and future
-database work. No production schema has been invented in this foundation
-milestone.
+The database foundation is versioned here; it has not been deployed to a live
+Supabase project. Apply migrations in filename order to a fresh/disposable
+Supabase project before production deployment.
 
-- migrations/: ordered SQL schema and policy migrations, reviewed before
-  application.
-- seed/: local development seed data only; never place production secrets
-  here.
-- functions/: Supabase Edge Functions added for specific server-side needs.
+- migrations/20261007000100_core_schema.sql: nine tables, constraints,
+  indexes, safe RLS defaults, Auth profile trigger.
+- migrations/20261007000200_access_workflows.sql: grants, RLS policies,
+  trusted helpers, guide verification and booking/review workflows.
+- migrations/20261007000300_storage.sql: three buckets and object policies.
+- tests/: local mock/bootstrap and security assertions. These are not a
+  substitute for real Supabase Auth and Storage integration tests.
+- seed/: local data only. No destination fixture or fake auth account is seeded.
+- functions/: reserved for later approved server-side needs.
 
-Write schema and Row Level Security policies together. Do not disable database
-security to make the client work. Keep service-role credentials outside the
-mobile app and out of source control.
-
+Keep the private schema out of Supabase Data API exposed schemas. Never put
+service-role credentials or verification documents in the Flutter client.
+Read docs/database.md and docs/security.md before changing policies.

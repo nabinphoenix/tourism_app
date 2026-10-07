@@ -10,8 +10,8 @@ shows a localized placeholder message.
 ## Verified environment
 
 - Flutter 3.47.6 stable / Dart 3.13.5.
-- Windows development; Flutter SDK at C:\src\flutter.
-- Android SDK at C:\Android\Sdk; build-tools 36.0.0.
+- Windows development with Flutter available on PATH.
+- Android build-tools 36.0.0 available.
 - Android 17 / API 37 emulator, device ID emulator-5554.
 - Android licenses accepted; Flutter doctor reports no issues.
 - Android builds use Android Studio's bundled JDK.
@@ -34,8 +34,6 @@ flutter run -d emulator-5554
 Start an emulator through Android Studio Device Manager, or select a connected
 device from flutter devices. The device ID above is specific to this machine.
 Optional web development uses flutter run -d chrome.
-
-If a shell has a stale PATH, invoke C:\src\flutter\bin\flutter.bat explicitly.
 
 ## Packages
 
@@ -118,10 +116,10 @@ or secret keys. Restart/rebuild when changing configuration; hot reload does
 not change compile-time values.
 
 Supabase 2.18.0 uses the publishableKey initialization argument; the configured
-public key is passed there. No schema, auth flow, storage bucket, RLS policy,
-or backend feature is created by this milestone. If initialization fails,
-the foundation UI still starts; no backend operation is attempted by these
-screens.
+public key is passed there. The repository now has versioned schema, RLS,
+and Storage migrations, but no live deployment or authentication flow.
+The mobile screens do not access backend tables yet. If initialization
+fails, the foundation UI still starts; these screens make no backend calls.
 
 ## Checks and Android build
 

@@ -5,5 +5,4 @@
 - Reason: It provides the first backend services without introducing a
   separate custom API service.
 - Consequence: Define and review PostgreSQL Row Level Security policies with
-  the future schema. Keep service-role credentials server-side only.
-
+  the V1 schema. Keep service-role credentials server-side only.

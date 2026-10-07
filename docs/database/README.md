@@ -1,10 +1,9 @@
-# Database planning
+# Database documentation
 
-Production tables, relationships, access rules, and indexes are intentionally
-not designed in this milestone.
+The [V1 data model](../database.md) describes the tables, relationships,
+constraints, indexes, and booking lifecycle. The [security model](../security.md)
+covers grants, RLS, roles, verification, Storage, and validation scope.
+Ordered executable SQL lives in supabase/migrations.
 
-Before writing the first production migration, document the requirements,
-review the data model, define Row Level Security policies for each exposed
-table, and agree on seed-data boundaries. Store ordered SQL changes in
-supabase/migrations. Keep local development fixtures in supabase/seed.
-
+No live Supabase project has received these migrations yet. Local PostgreSQL
+mock validation is documented in supabase/tests/README.md.
