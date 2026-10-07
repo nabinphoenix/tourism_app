@@ -1,177 +1,171 @@
 # Gurkha Guides
 
-One Platform, All of Nepal
+One Platform, All of Nepal.
 
-Gurkha Guides is a cross-platform tourism application for Nepal. The initial
-engineering direction is a Flutter mobile client backed by Supabase. This
-repository currently contains the monorepo and architecture foundation only.
-The Flutter SDK is not installed on the development machine, so the runnable
-Flutter app, package resolution, and build verification are pending SDK setup.
+Gurkha Guides is a tourism mobile application for Nepal, built from one Flutter
+codebase for Android and iOS. The current milestone provides a runnable app
+foundation: Home, Settings, English/Nepali localization, persisted language
+selection, declarative routing, and optional Supabase initialization.
 
-## Current status
+Product features and production backend resources are deferred. The admin
+dashboard has not been initialized.
 
-- Repository initialized on the main branch.
-- Monorepo folders, security ignore rules, environment example, and initial
-  architecture documentation are in place.
-- English and Nepali starter translation resources are present.
-- Flutter application generation and validation are blocked until Flutter is
-  installed and available on PATH.
-- No destinations, guide marketplace, bookings, payments, maps, AI, or admin
-  application have been implemented.
+## Environment and stack
 
-## Technology direction
+Verified on Windows on 2026-10-06 with Flutter **3.47.6 stable** and Dart
+**3.13.5**. Flutter doctor reported no issues. The Android SDK is at
+C:\Android\Sdk, with build-tools 36.0.0 and an Android 17/API 37 emulator.
+Flutter uses Android Studio's bundled JDK for Android builds.
 
-- Flutter and Dart for one Android/iOS codebase.
-- Supabase for authentication, PostgreSQL, and storage.
-- Riverpod for application state.
-- go_router for declarative navigation.
-- Flutter gen-l10n for English and Nepali localization.
-- shared_preferences for a simple persisted language preference.
-- No Next.js admin app or FastAPI service in this milestone.
+| Dependency | Resolved version | Purpose |
+| --- | --- | --- |
+| flutter_riverpod | 3.4.3 | Locale state and dependency injection |
+| go_router | 18.0.2 | Home and Settings navigation |
+| supabase_flutter | 2.18.0 | Optional public client initialization |
+| shared_preferences | 2.5.6 | Language persistence using SharedPreferencesAsync |
+| intl | 0.20.3 | Generated localization support |
+| flutter_localizations | Flutter SDK | Material and framework localization |
+| flutter_lints | 6.0.0 | Development analysis rules |
 
-The intended package roles and architecture are documented in
-docs/architecture/overview.md and the architecture decision records. Exact
-package versions will be selected against the installed Flutter/Dart SDK
-before dependencies are added.
+The application lockfile is committed. Flutter's built-in compile-time
+configuration avoids an additional environment package.
 
 ## Repository structure
 
 ~~~text
-.
-├── mobile/                  Flutter Android/iOS client (scaffold pending)
-├── admin/                   Later dashboard; not initialized
-├── supabase/
-│   ├── migrations/           Future database migrations
-│   ├── seed/                 Future local development seed data
-│   └── functions/            Future Supabase Edge Functions
-├── docs/
-│   ├── requirements/
-│   ├── architecture/
-│   │   └── decisions/
-│   ├── database/
-│   ├── research/
-│   └── legal/
-├── .github/
-├── .env.example
-├── .gitignore
-├── LICENSE
-└── README.md
+mobile/                   Flutter Android/iOS client; web target for development
+  android/                Android native project
+  ios/                    iOS native project
+  web/                    Optional development target
+  lib/
+    app/                  App composition, router, Material 3 theme
+    core/                 Configuration, locale state, preferences service
+    features/home/        Foundation home screen
+    features/settings/    Language selector
+    shared/widgets/       Loading/error support
+    l10n/                 English/Nepali ARB and generated localization code
+  test/                   Widget and configuration tests
+admin/                    Later dashboard
+supabase/
+  migrations/             Future schema and policy migrations
+  seed/                   Future local seed data
+  functions/              Future Edge Functions
+docs/
+  requirements/
+  architecture/decisions/
+  database/
+  research/
+  legal/
+.github/
 ~~~
 
 ## Prerequisites
 
-- Git for Windows.
-- Flutter stable SDK, with its bin directory available in the user PATH.
-- Android Studio with Android SDK command-line tools, an Android platform, and
-  either an emulator or a connected Android device for Android development.
-- A macOS machine with Xcode for local iOS builds and simulator testing.
+Install Flutter stable and add its bin directory to your user PATH. The
+verified SDK location on this machine is C:\src\flutter. A Flutter IDE plugin
+alone does not install the SDK.
 
-Flutter and Dart were not available on the inspected Windows machine. The
-recommended controlled setup is to download the current stable Flutter SDK
-from the official Flutter installation guide, extract it to a user-writable
-path without spaces that is outside this repository (for example C:\src\flutter
-if that directory is writable), and add its bin directory to the user PATH.
-This avoids modifying a system-wide SDK installation. Install Android Studio
-and the Android SDK through their official installer when Android development
-is ready, then run flutter doctor -v and accept the Android SDK licenses.
+Android development requires Android Studio, the Android SDK/platform tools,
+accepted SDK licenses, and a physical device or emulator for launch testing.
+Run flutter doctor -v to identify missing components. Android license review
+uses flutter doctor --android-licenses.
 
-Useful official guides:
+Official setup guides:
+[Flutter](https://docs.flutter.dev/install/manual),
+[Android](https://docs.flutter.dev/platform-integration/android/setup).
 
-- [Flutter manual installation for Windows](https://docs.flutter.dev/install/manual)
-- [Add Flutter to the Windows PATH](https://docs.flutter.dev/install/add-to-path)
-- [Set up Flutter for Android](https://docs.flutter.dev/platform-integration/android/setup)
+The Android application ID and iOS bundle identifier are both
+**com.gurkhaguides.app**. Confirm ownership before store distribution; changing
+them after release affects app identity and integrations.
 
-## Create and run the mobile app
+The iOS project files are generated and committed. **iOS production builds
+cannot be produced on Windows; macOS and Xcode are required.** Windows desktop
+is not a client target. Web remains available for development.
 
-The mobile folder is not yet a generated Flutter project. Once Flutter is
-installed, initialize the project there with Android, iOS, and optional web
-platforms, using the established application identifier:
+## Run
+
+From the repository root:
 
 ~~~powershell
 cd mobile
-flutter create --project-name gurkha_guides --org com.gurkhaguides --platforms=android,ios,web .
 flutter pub get
-flutter run
+flutter run -d emulator-5554
 ~~~
 
-The requested application identifier is com.gurkhaguides.app. Flutter derives
-native identifiers from the organization and Dart project name, so the
-generated Android applicationId and iOS bundle identifier must be set to
-com.gurkhaguides.app in the generated native project before the first build.
-Changing identifiers after a public release can affect store identity,
-signing, deep links, and integrations.
+Use flutter devices to find the correct ID if your emulator/device differs.
+Create and start an emulator through Android Studio's Device Manager if needed.
+For optional browser development, use flutter run -d chrome.
 
-The Android and iOS folders are generated by Flutter from the same Dart
-application. iOS production builds cannot be generated on Windows; Flutter
-will still generate iOS project files here, and building/releasing them later
-requires macOS and Xcode.
+## Supabase configuration
 
-## Environment variables and Supabase
+The app runs without backend configuration. No real credentials, database
+schema, authentication flow, policies, or storage buckets are included.
 
-Copy the root .env.example to mobile/.env when the Flutter app is generated,
-then provide the Supabase project URL and a public client key (anon key or
-publishable key as appropriate for the Supabase project). The mobile app must
-never contain a Supabase service_role key, database password, or other server
-secret. The public client key is not a substitute for database security:
-production tables must have correctly designed Row Level Security policies.
+When a Supabase project is available, copy .env.example to .env in the
+repository root and supply SUPABASE_URL and SUPABASE_ANON_KEY. Use only a
+public anon/publishable client key. From mobile, run:
 
-The current example contains placeholders only. No Supabase project
-credentials were present during setup. Keep local .env files untracked; the
-repository ignore rules exclude them.
+~~~powershell
+flutter run -d emulator-5554 --dart-define-from-file=../.env
+~~~
+
+The same flag can be passed to flutter build. Flutter reads the ignored local
+file at build time; it is not a required app asset. The public configuration is
+extractable from the compiled app. Never supply service-role keys, secret
+keys, private credentials, or database passwords.
+
+Missing or placeholder configuration skips Supabase initialization. The SDK
+initialization uses its current publishableKey parameter while retaining the
+requested SUPABASE_ANON_KEY configuration name for public anon/publishable keys.
 
 ## Localization
 
-English and Nepali resources are started at mobile/lib/l10n/app_en.arb and
-mobile/lib/l10n/app_ne.arb. The runnable app will enable Flutter gen-l10n and
-provide a small persisted language switcher. Add user-facing copy to ARB
-resources instead of scattering literals through widgets.
-
-## Tests and verification
-
-No Flutter analysis, tests, or APK build could run because Flutter/Dart are not
-installed. Once the app is generated and dependencies are resolved, run:
+English and Nepali copy is stored in mobile/lib/l10n/app_en.arb and app_ne.arb.
+Flutter gen-l10n produces lib/l10n/generated. Regenerate after editing ARBs:
 
 ~~~powershell
 cd mobile
+flutter gen-l10n
+~~~
+
+Settings changes the language through Riverpod and persists it using
+SharedPreferencesAsync. Startup waits for the saved language. A preference
+read error offers Retry; a failed write preserves the current language.
+
+## Verification
+
+From mobile:
+
+~~~powershell
 flutter pub get
+dart format .
 flutter analyze
 flutter test
 flutter build apk --debug
 ~~~
 
-The APK build also requires Android SDK tooling and accepted SDK licenses.
-Flutter web support may remain enabled for development, but web is not the
-primary client target.
+The debug APK is written to mobile/build/app/outputs/flutter-apk/app-debug.apk.
+Tests cover startup, English copy, Home/Settings navigation, Nepali selection
+and restoration, preference errors, and optional backend configuration.
 
-## Architecture
+See [mobile/README.md](mobile/README.md) for details and
+[the architecture overview](docs/architecture/overview.md) for boundaries.
 
-The initial flow is Flutter to Supabase Auth, PostgreSQL, and Storage. See
-docs/architecture/overview.md for the boundary and future integration notes.
-Database tables and policies are intentionally not designed in this
-foundation milestone.
+## Security and release notes
 
-## Security notes
+Local environment files, SDK paths, build output, IDE files, signing keys,
+and private credentials are ignored. Public client keys do not replace
+server authorization: schema and Row Level Security policies require their
+own reviewed milestone.
 
-- Never commit .env files, private keys, signing files, Firebase private
-  credentials, or Supabase service_role keys.
-- The Flutter client may contain only public Supabase client configuration.
-- Keep authorization in Supabase policies and server-side controls; do not
-  weaken database security for client convenience.
-- The LICENSE file is a provisional notice. Choose the project license and
-  correct copyright holder before distribution.
+Launcher icons and release signing remain Flutter template defaults.
+This milestone produces a debug build, not a store release. The LICENSE
+notice remains provisional pending the owner's license decision.
 
-## Future milestones
+## Next milestones
 
-1. Install Flutter and Android tooling, generate the mobile app, add the
-   compatible foundation packages, and verify the foundation on Android.
-2. Review product requirements and make a data model/RLS design before adding
-   database migrations.
-3. Implement product features in separate approved milestones.
-4. Add the Next.js admin dashboard when its workflows are defined.
-5. Consider Firebase Cloud Messaging, OpenStreetMap with flutter_map, and
-   other integrations only when their product features are scheduled.
-
-FastAPI is not part of the initial architecture. Add a custom service only if
-future server-side business logic has requirements that Supabase cannot
-reasonably handle.
-
+Review product requirements and design the data model and access policies
+before adding backend resources. Implement product features in separately
+approved milestones. Firebase Cloud Messaging, OpenStreetMap/flutter_map,
+and a Next.js admin are future integrations. FastAPI is not part of the
+initial system and will only be considered for demonstrated server-side needs.

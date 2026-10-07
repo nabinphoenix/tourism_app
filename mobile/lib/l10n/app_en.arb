@@ -1,10 +1,16 @@
 {
   "@@locale": "en",
   "appTitle": "Gurkha Guides",
-  "tagline": "One Platform, All of Nepal",
-  "exploreNepal": "Explore Nepal",
+  "tagline": "One Platform, All of Nepal.",
+  "home": "Home",
+  "settings": "Settings",
   "language": "Language",
   "english": "English",
-  "nepali": "Nepali"
+  "nepali": "Nepali",
+  "changeLanguage": "Change Language",
+  "exploreNepal": "Explore Nepal",
+  "explorePlaceholder": "More ways to explore Nepal are coming soon.",
+  "preferencesLoadError": "Couldn't load your preferences.",
+  "languageSaveError": "Couldn't save your language. Please try again.",
+  "retry": "Retry"
 }
-

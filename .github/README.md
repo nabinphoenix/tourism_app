@@ -1,6 +1,5 @@
 # GitHub configuration
 
-Reserved for repository workflows and contribution configuration. No CI
-workflow is added until a runnable Flutter project and its package versions
-are available.
-
+Reserved for repository workflows and contribution configuration.
+This foundation milestone uses the local analysis, test, and build commands
+documented in mobile/README.md. Automated CI can be added in a later milestone.
