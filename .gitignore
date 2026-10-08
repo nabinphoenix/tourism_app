@@ -48,6 +48,9 @@
 supabase/.temp/
 supabase/.branches/
 
+# Project-local Node tooling
+node_modules/
+
 # Admin dependencies (dashboard is not initialized yet)
 admin/node_modules/
 admin/.next/
@@ -61,4 +64,3 @@ admin/out/
 .DS_Store
 Thumbs.db
 Desktop.ini
-

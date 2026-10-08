@@ -87,30 +87,86 @@ served by a public URL. RLS allows reads only when the destination folder
 matches a published destination. Admin may upload drafts. The app will need
 an authenticated or anon-key Storage download request when that UI is built.
 
-## Validation scope
+## Live disposable-project validation
 
-Migrations include deterministic schema, grants, policies, functions, and
-buckets, but this repository has no live Supabase project credentials.
-Supabase CLI is not currently installed and Docker Desktop's engine was not
-running at inspection. The migrations and security scenarios passed in a disposable local
-PostgreSQL 18 database with mock Supabase roles/schemas. This does not prove behavior
-against real Auth and Storage services. These are local simulations, never
-Supabase integration tests.
+On 2026-10-08 the three ordered migrations applied successfully to an empty,
+user-confirmed disposable hosted Supabase project. Migration history showed
+all three versions. `supabase/tests/schema_checks.sql` passed against the
+hosted PostgreSQL 17 database: nine application tables with RLS, narrow
+grants, private `destination-media` and `guide-verification` buckets, and safe
+`SECURITY DEFINER` search paths. The live project had 35 application RLS
+policies, 11 Gurkha Guides Storage object policies, one Auth profile trigger,
+and three buckets after deployment. Earlier PostgreSQL 18 mock tests remain **local
+simulations**, separate from these live checks.
 
-On a disposable Supabase instance, apply migrations in order, then exercise
-these scenarios with real anon and authenticated JWTs:
+The reproducible harness in `supabase/tests/live_integration.mjs` used actual
+Auth signup and signed-in user JWTs against the Data API, booking RPC, and
+Storage API. A real anonymous request checked published content and private
+file access. The authenticated actors were a TOURIST, a GUIDE, and a second
+test user whose database role was temporarily promoted to ADMIN by trusted
+SQL. No service-role or secret API key was used in the HTTP RLS checks.
+Trusted CLI SQL handled disposable role setup, verification assertions, and
+cleanup; it was never counted as proof of RLS behavior.
 
-1. TOURIST cannot update role to ADMIN.
-2. GUIDE cannot set verification_status to VERIFIED or approve a request.
-3. An unrelated user cannot SELECT a booking.
-4. A tourist cannot INSERT for another tourist or insert non-REQUESTED status.
-5. A guide cannot transition someone else's booking.
-6. A non-completed booking cannot receive a review; a completed one can.
-7. A second review for one booking is rejected.
-8. Ordinary users cannot publish destinations or experiences.
-9. Anonymous users cannot download guide-verification objects.
-10. Owner reads, request creation, transitions, and private document reads work.
+The final run passed **18/18 scenarios**, with **0 failed** and **0 untested**:
 
-Also inspect pg_policies and information_schema.role_table_grants after
-deployment. Run tests with the actual client roles; testing only as postgres
-or service_role bypasses the key RLS boundary.
+| # | Live assertion | Result |
+| --- | --- | --- |
+| 1 | Client cannot self-promote to ADMIN | Pass |
+| 2 | ADMIN signup metadata defaults to TOURIST | Pass |
+| 3 | GUIDE cannot self-verify | Pass |
+| 4 | Unrelated tourist cannot read a booking | Pass |
+| 5 | Tourist cannot book for another tourist | Pass |
+| 6 | Unrelated guide cannot transition a booking | Pass |
+| 7 | Direct client booking status update is blocked | Pass |
+| 8 | REQUESTED → ACCEPTED → CONFIRMED → COMPLETED succeeds through RPC | Pass |
+| 9 | Invalid booking transition fails | Pass |
+| 10 | Review before completion fails | Pass |
+| 11 | Completed-booking tourist review succeeds | Pass |
+| 12 | Duplicate booking review fails | Pass |
+| 13 | Ordinary user cannot publish a destination | Pass |
+| 14 | Trusted ADMIN can publish a destination | Pass |
+| 15 | Verification object has no public read URL | Pass |
+| 16 | Anonymous/unrelated download and unrelated signed-URL creation fail | Pass |
+| 17 | Owning GUIDE and ADMIN read evidence; owner signed URL downloads | Pass |
+| 18 | Own profile/guide edits, favorite insert/delete, avatar and destination-media operations work as allowed | Pass |
+
+The harness additionally observed Auth-trigger profile creation, GUIDE
+`PENDING` initialization, private verification submission, denied guide
+self-approval, ADMIN approval, and synchronized `VERIFIED` status. Its final
+cleanup reported no warnings; read-only counts afterward showed zero test
+Auth users, destinations, experiences, bookings, reviews, verification
+requests, and Storage objects. The JSON test report is local and Git-ignored.
+
+The first live attempt was blocked before user creation by hosted Auth's email
+quota. Temporarily disabling **Confirm email** on the disposable project
+enabled fake-user signup without sending confirmation email. A later attempt
+reached signed-URL validation but used an incorrect URL prefix in the test
+harness; the harness was corrected and all 18 scenarios passed. Neither issue
+required a migration change. Restore **Confirm email** after testing and
+verify `mailer_autoconfirm=false` before using the project for other work.
+
+The 18 scenarios do not exhaust every policy branch. In particular, this run
+did not exercise rejection/cancellation booking paths, unpublished destination
+media, all negative favorite cases, or every Storage mutation. These remain
+future regression cases. No production project was tested or deployed.
+
+### Reproduce on a disposable project
+
+Use the pinned Supabase CLI after `npm ci` and `npx supabase login`. Verify the
+project identity and empty/new state first, then link and review a dry run:
+
+~~~powershell
+npx supabase link --project-ref <disposable-project-ref>
+npx supabase migration list --linked
+npx supabase db push --linked --dry-run --skip-vault
+~~~
+
+Only after explicit approval, deploy with
+`npx supabase db push --linked --skip-vault`. Run
+`npx supabase db query --linked --file supabase/tests/schema_checks.sql` and
+the live harness as documented in `supabase/tests/README.md`. The harness
+requires a temporary no-confirmation setting on a disposable project and a
+logged-in CLI; it never commits public or privileged keys. Restore the original
+Auth setting afterward. Never use the SQL-only mock as a substitute for user
+JWT and Storage API tests.

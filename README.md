@@ -8,7 +8,7 @@ English/Nepali localization, persisted language selection, routing, and
 optional Supabase initialization.
 
 V1 schema, access-control, and Storage migrations are versioned under
-supabase/migrations, but have not been applied to a live Supabase project.
+supabase/migrations and were validated on a disposable hosted Supabase project.
 Product UI features and the admin dashboard have not been initialized.
 
 ## Environment and stack
@@ -29,7 +29,8 @@ Flutter uses Android Studio's bundled JDK for Android builds.
 | flutter_lints | 6.0.0 | Development analysis rules |
 
 The application lockfile is committed. Flutter's built-in compile-time
-configuration avoids an additional environment package.
+configuration avoids an additional environment package. Supabase CLI 2.120.0
+is pinned as a project-local development dependency in the root npm lockfile.
 
 ## Repository structure
 
@@ -49,6 +50,7 @@ mobile/                   Flutter Android/iOS client; web target for development
 admin/                    Later dashboard
 supabase/
   migrations/             V1 schema, RLS, workflow, and Storage migrations
+  tests/                  Local SQL checks and disposable live JWT harness
   seed/                   Future local seed data
   functions/              Future Edge Functions
 docs/
@@ -100,8 +102,8 @@ For optional browser development, use flutter run -d chrome.
 ## Supabase configuration
 
 The app runs without backend configuration. V1 schema, policies, and bucket
-definitions are versioned but not deployed to a live project. There are no
-real credentials or authentication screens.
+definitions were deployed to a disposable development project for validation.
+There are no credentials or authentication screens in the repository.
 
 When a Supabase project is available, copy .env.example to .env in the
 repository root and supply SUPABASE_URL and SUPABASE_ANON_KEY. Use only a
@@ -128,9 +130,11 @@ a checked booking-transition RPC, review ownership checks, and three Storage
 buckets. No production data or first-admin identity is seeded.
 
 See [data model](docs/database.md), [security model](docs/security.md),
-and [Supabase workspace](supabase/README.md). The SQL was executed and
-security-simulated against a disposable local PostgreSQL mock; real Supabase
-Auth/Storage integration remains to be run after a project is provisioned.
+and [Supabase workspace](supabase/README.md). The SQL was executed against a
+local PostgreSQL mock and the deployed schema was checked on a disposable
+hosted Supabase project. On 2026-10-08, the live Auth/Data API/RPC/Storage
+harness passed 18 security scenarios using real user JWTs. It used trusted
+SQL only for disposable test setup and cleanup. See [live validation notes](docs/security.md).
 
 ## Localization
 
@@ -169,8 +173,9 @@ See [mobile/README.md](mobile/README.md) for details and
 
 Local environment files, SDK paths, build output, IDE files, signing keys,
 and private credentials are ignored. Public client keys do not replace
-server authorization. The versioned RLS policies and grants must be applied
-and integration-tested on a disposable Supabase project before product use.
+server authorization. The validated disposable deployment is not a production
+deployment; apply the versioned migrations and review security again before
+product use.
 
 Launcher icons and release signing remain Flutter template defaults.
 This milestone produces a debug build, not a store release. The LICENSE
@@ -178,9 +183,9 @@ notice remains provisional pending the owner's license decision.
 
 ## Next milestones
 
-Deploy the V1 migrations to a disposable Supabase project and test with real
-Auth and Storage roles before adding product UI. Implement product features in
-separately approved milestones. Firebase Cloud Messaging,
+After restoring email confirmation on the disposable project and completing
+the reviewed backend handoff, the next separately approved milestone is
+authentication UI. Firebase Cloud Messaging,
 OpenStreetMap/flutter_map,
 and a Next.js admin are future integrations. FastAPI is not part of the
 initial system and will only be considered for demonstrated server-side needs.

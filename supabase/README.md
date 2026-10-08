@@ -1,16 +1,16 @@
 # Supabase workspace
 
-The database foundation is versioned here; it has not been deployed to a live
-Supabase project. Apply migrations in filename order to a fresh/disposable
-Supabase project before production deployment.
+The database foundation is versioned here. The three migrations were applied
+and live-tested on a disposable hosted Supabase project on 2026-10-08. Apply
+them in filename order to any future environment after reviewing the target.
 
 - migrations/20261007000100_core_schema.sql: nine tables, constraints,
   indexes, safe RLS defaults, Auth profile trigger.
 - migrations/20261007000200_access_workflows.sql: grants, RLS policies,
   trusted helpers, guide verification and booking/review workflows.
 - migrations/20261007000300_storage.sql: three buckets and object policies.
-- tests/: local mock/bootstrap and security assertions. These are not a
-  substitute for real Supabase Auth and Storage integration tests.
+- tests/: local mock/bootstrap and security assertions plus a disposable
+  live Auth/Data API/Storage harness using real user JWTs.
 - seed/: local data only. No destination fixture or fake auth account is seeded.
 - functions/: reserved for later approved server-side needs.
 

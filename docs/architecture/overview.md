@@ -55,8 +55,9 @@ verification exercises the native plugin.
 
 Supabase is the initial backend for Auth, PostgreSQL, and Storage. Versioned
 migrations now define the V1 schema, RLS, booking workflow, and Storage buckets.
-They are not yet deployed to a live project; the Flutter client has no auth or
-data screens. See docs/database.md and docs/security.md.
+They were deployed and security-tested on a disposable hosted project. The
+Flutter client still has no auth or data screens. See docs/database.md and
+docs/security.md.
 
 Future integrations are Firebase Cloud Messaging, OpenStreetMap/flutter_map,
 and a Next.js admin dashboard. FastAPI is not part of the initial architecture;

@@ -33,5 +33,41 @@ then perform the JWT-based scenarios in docs/security.md against real
 Auth/Storage endpoints. Keep the private schema out of exposed schemas.
 Do not run db reset against a linked/shared project.
 
+## Disposable hosted-project integration run
+
+`live_integration.mjs` exercises 18 security scenarios through Supabase Auth,
+Data API, RPC, and Storage HTTP endpoints with actual user JWTs. It creates
+three fake `gg-live-*` accounts and harmless one-pixel PNGs, then attempts to
+remove its test data. A logged-in project-local Supabase CLI runs only the
+trusted test setup/cleanup SQL (email confirmation for fake accounts, temporary
+test-role changes, and cleanup). Those trusted SQL actions are never counted
+as RLS evidence. No service-role or secret API key is used by the harness.
+
+Requirements:
+
+1. Use only an explicitly approved disposable Supabase project. Confirm its
+   project ref and link it with `npx supabase link --project-ref <ref>`.
+2. Apply the three migrations and verify their history before running tests.
+3. Be signed in to the CLI. The wrapper obtains only the **public** legacy anon
+   key from the CLI, without `--reveal`, and holds it in the process environment.
+4. On a hosted project using Supabase's built-in email sender, temporarily
+   disable **Confirm email** under Auth → Providers → Email for the test run;
+   the hosted email quota otherwise stops multi-user signup. Restore the
+   original setting afterward. Do not make this change in production.
+
+From the repository root in PowerShell:
+
+~~~powershell
+.\supabase\tests\run_live.ps1 -ProjectRef <disposable-project-ref>
+~~~
+
+The wrapper requires the linked ref to match its argument. It never prints
+keys. The detailed JSON result is written to the ignored file
+`supabase/.temp/live_integration_report.json`; it contains scenario outcomes
+and a random run ID, never passwords or JWTs. If the process is interrupted,
+inspect the disposable project for `gg-live-*` users/content and clean it up
+using trusted admin tools and Storage APIs. Do not delete Storage object rows
+directly from SQL because that leaves file bytes behind.
+
 Supabase migration workflow:
 https://supabase.com/docs/guides/deployment/database-migrations

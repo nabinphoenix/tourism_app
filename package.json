@@ -1,0 +1,7 @@
+{
+  "name": "gurkha-guides-tooling",
+  "private": true,
+  "devDependencies": {
+    "supabase": "2.120.0"
+  }
+}
